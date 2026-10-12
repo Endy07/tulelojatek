@@ -1,1 +1,212 @@
-<!doctype html><meta charset="utf-8"><p>Hamarosan…</p>
+<!doctype html>
+<html lang="hu">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Túlélőjáték – közös tervező</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧟</text></svg>">
+<style>
+  :root {
+    --bg: #f4f1ea; --panel: #ffffff; --panel-2: #ece7dc; --text: #1f1d1a; --muted: #6b655b;
+    --border: #d9d2c3; --accent: #b4441b; --accent-text: #ffffff; --accent-soft: #f6dfd3;
+    --ok: #2f7a3d; --ok-soft: #dcefdc; --warn: #a16a00; --warn-soft: #f6ead0;
+    --next: #1d5fa8; --next-soft: #dbe7f6; --idle: #8a847a; --idle-soft: #ebe7df;
+    --shadow: 0 1px 2px rgba(0,0,0,.06), 0 4px 14px rgba(0,0,0,.05);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #121311; --panel: #1b1d1a; --panel-2: #242722; --text: #e9e6df; --muted: #a29d93;
+      --border: #33372f; --accent: #e0703f; --accent-text: #1a0d06; --accent-soft: #3a2218;
+      --ok: #7cc48a; --ok-soft: #1e3322; --warn: #e3b55a; --warn-soft: #3a3019;
+      --next: #79aef0; --next-soft: #1b2a3d; --idle: #8f8a80; --idle-soft: #262823;
+      --shadow: 0 1px 2px rgba(0,0,0,.4);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #121311; --panel: #1b1d1a; --panel-2: #242722; --text: #e9e6df; --muted: #a29d93;
+    --border: #33372f; --accent: #e0703f; --accent-text: #1a0d06; --accent-soft: #3a2218;
+    --ok: #7cc48a; --ok-soft: #1e3322; --warn: #e3b55a; --warn-soft: #3a3019;
+    --next: #79aef0; --next-soft: #1b2a3d; --idle: #8f8a80; --idle-soft: #262823;
+    --shadow: 0 1px 2px rgba(0,0,0,.4);
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body { margin: 0; background: var(--bg); color: var(--text);
+    font: 16px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+  a { color: var(--accent); }
+  button, input, select, textarea { font: inherit; color: inherit; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 0 16px; }
+
+  header.fej { padding: 18px 0 10px; }
+  .fej-sor { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+  h1 { font-size: 1.35rem; margin: 0; letter-spacing: -.01em; }
+  h1 small { display: block; font-size: .8rem; font-weight: 500; color: var(--muted); letter-spacing: 0; }
+  .chipek { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .chip { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px;
+    background: var(--panel-2); border: 1px solid var(--border); font-size: .85rem; white-space: nowrap; }
+  .chip button { border: 0; background: none; padding: 0; cursor: pointer; color: var(--muted); }
+  .pont { width: 8px; height: 8px; border-radius: 50%; background: var(--idle); }
+  .pont.ok { background: var(--ok); } .pont.hiba { background: var(--accent); } .pont.var { background: var(--warn); }
+
+  nav.fulek { position: sticky; top: 0; z-index: 5; background: var(--bg); border-bottom: 1px solid var(--border); }
+  nav.fulek .wrap { display: flex; gap: 4px; overflow-x: auto; scrollbar-width: none; }
+  nav.fulek .wrap::-webkit-scrollbar { display: none; }
+  nav.fulek button { border: 0; background: none; padding: 12px 12px 10px; cursor: pointer; white-space: nowrap;
+    border-bottom: 3px solid transparent; color: var(--muted); font-weight: 600; }
+  nav.fulek button[aria-selected="true"] { color: var(--text); border-bottom-color: var(--accent); }
+  .szam { display: inline-block; min-width: 20px; padding: 0 6px; margin-left: 4px; border-radius: 999px;
+    background: var(--accent); color: var(--accent-text); font-size: .75rem; line-height: 20px; text-align: center; }
+
+  main { padding: 18px 0 64px; }
+  section[hidden] { display: none; }
+  h2 { font-size: 1.15rem; margin: 26px 0 10px; }
+  h2:first-child { margin-top: 0; }
+  .kartya { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 16px;
+    margin-bottom: 14px; box-shadow: var(--shadow); }
+  .kartya h3 { margin: 0 0 6px; font-size: 1.05rem; }
+  .halvany { color: var(--muted); font-size: .9rem; }
+  .uzenet { padding: 12px 14px; border-radius: 10px; background: var(--warn-soft); border: 1px solid var(--border); margin-bottom: 14px; }
+  .uzenet.hiba { background: var(--accent-soft); }
+
+  .kiemelt { border-left: 4px solid var(--accent); }
+  .lista-ujdonsag { margin: 0; padding-left: 18px; }
+  .lista-ujdonsag li { margin: 4px 0; }
+
+  .fejezetek { display: grid; gap: 6px; }
+  .fejezet-sor { display: flex; align-items: center; gap: 10px; padding: 8px 12px; border-radius: 8px; background: var(--panel-2); }
+  .fejezet-sor .sz { width: 26px; color: var(--muted); font-variant-numeric: tabular-nums; text-align: right; flex: none; }
+  .fejezet-sor .c { flex: 1; min-width: 0; }
+  .fejezet-sor .c small { display: block; color: var(--muted); font-size: .8rem; }
+  .cimke { font-size: .75rem; font-weight: 700; padding: 2px 8px; border-radius: 999px; white-space: nowrap; }
+  .cimke.eldontve { background: var(--ok-soft); color: var(--ok); }
+  .cimke.reszben { background: var(--warn-soft); color: var(--warn); }
+  .cimke.kovetkezo { background: var(--next-soft); color: var(--next); }
+  .cimke.hatravan { background: var(--idle-soft); color: var(--idle); }
+  .cimke.uj { background: var(--accent); color: var(--accent-text); }
+  .cimke.megbeszelve { background: var(--next-soft); color: var(--next); }
+  .cimke.bekerult { background: var(--ok-soft); color: var(--ok); }
+  .cimke.elvetve { background: var(--idle-soft); color: var(--idle); }
+  .cimke.lezarva { background: var(--ok-soft); color: var(--ok); }
+  .halado { height: 10px; border-radius: 999px; background: var(--panel-2); overflow: hidden; display: flex; margin: 10px 0 6px; }
+  .halado span { display: block; height: 100%; }
+
+  .lehetoseg { display: flex; gap: 10px; align-items: flex-start; padding: 10px 12px; border: 1px solid var(--border);
+    border-radius: 10px; margin: 8px 0; cursor: pointer; background: var(--panel); }
+  .lehetoseg:hover { border-color: var(--accent); }
+  .lehetoseg input { margin-top: 5px; accent-color: var(--accent); flex: none; }
+  .lehetoseg.valasztott { border-color: var(--accent); background: var(--accent-soft); }
+  .lehetoseg .javasolt { font-size: .75rem; font-weight: 700; color: var(--ok); margin-left: 6px; }
+  .lehetoseg small { display: block; color: var(--muted); }
+  .masok { margin-top: 12px; padding-top: 10px; border-top: 1px dashed var(--border); }
+  .masok-sor { margin: 6px 0; font-size: .95rem; }
+  .masok-sor b { font-weight: 700; }
+  .dontes { margin-top: 10px; padding: 10px 12px; border-radius: 8px; background: var(--ok-soft); }
+
+  label.mezo { display: block; font-weight: 600; margin: 12px 0 4px; font-size: .95rem; }
+  textarea, input[type="text"], select { width: 100%; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--border);
+    background: var(--panel); }
+  textarea { min-height: 96px; resize: vertical; }
+  textarea:focus, input:focus, select:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+  .szoveg-doboz { position: relative; }
+  .szoveg-doboz textarea { padding-right: 52px; }
+  .mikrofon { position: absolute; right: 8px; top: 8px; width: 38px; height: 38px; border-radius: 50%;
+    border: 1px solid var(--border); background: var(--panel-2); cursor: pointer; font-size: 1.1rem; }
+  .mikrofon.felvesz { background: var(--accent); color: var(--accent-text); animation: lukt 1.2s infinite; }
+  @keyframes lukt { 50% { box-shadow: 0 0 0 6px var(--accent-soft); } }
+  .gombsor { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-top: 10px; }
+  .gomb { border: 1px solid var(--accent); background: var(--accent); color: var(--accent-text); padding: 9px 16px;
+    border-radius: 10px; cursor: pointer; font-weight: 700; }
+  .gomb.masodlagos { background: transparent; color: var(--accent); }
+  .gomb.kicsi { padding: 5px 10px; font-size: .85rem; font-weight: 600; }
+  .gomb:disabled { opacity: .5; cursor: default; }
+  .allapotjel { font-size: .85rem; color: var(--muted); }
+
+  .szuro { display: flex; gap: 8px; flex-wrap: wrap; margin: 6px 0 14px; }
+  .szuro select { width: auto; }
+  .otlet-fej { display: flex; justify-content: space-between; gap: 10px; align-items: baseline; flex-wrap: wrap; }
+  .otlet-szoveg { white-space: pre-wrap; overflow-wrap: anywhere; margin: 8px 0; }
+  .hozzaszolasok { margin-top: 8px; padding-left: 12px; border-left: 3px solid var(--border); }
+  .hozzaszolas { margin: 6px 0; font-size: .95rem; white-space: pre-wrap; overflow-wrap: anywhere; }
+
+  .tartalom { overflow-wrap: anywhere; }
+  .tartalom details { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; margin-bottom: 10px; box-shadow: var(--shadow); }
+  .tartalom summary { cursor: pointer; padding: 12px 16px; font-weight: 700; font-size: 1.02rem; list-style: none; display: flex; justify-content: space-between; gap: 10px; }
+  .tartalom summary::-webkit-details-marker { display: none; }
+  .tartalom summary::after { content: "▾"; color: var(--muted); transition: transform .15s; }
+  .tartalom details[open] summary::after { transform: rotate(180deg); }
+  .tartalom .torzs { padding: 0 16px 14px; }
+  .tartalom h1 { font-size: 1.3rem; margin: 0 0 10px; }
+  .tartalom h3 { font-size: 1rem; margin: 18px 0 6px; }
+  .tartalom blockquote { margin: 10px 0; padding: 10px 14px; border-radius: 10px; background: var(--ok-soft); border-left: 4px solid var(--ok); }
+  .tartalom blockquote p:first-child { margin-top: 0; } .tartalom blockquote p:last-child { margin-bottom: 0; }
+  .tartalom ul, .tartalom ol { padding-left: 20px; }
+  .tartalom li { margin: 3px 0; }
+  .tartalom code { background: var(--panel-2); padding: 1px 5px; border-radius: 5px; font-size: .9em; }
+  .tartalom pre { background: var(--panel-2); padding: 10px; border-radius: 8px; overflow-x: auto; }
+  .tartalom pre code { background: none; padding: 0; }
+  .tartalom hr { display: none; }
+  .tabla-tarto { overflow-x: auto; margin: 10px 0; }
+  .tartalom table { border-collapse: collapse; width: 100%; font-size: .93rem; }
+  .tartalom th, .tartalom td { border: 1px solid var(--border); padding: 6px 8px; text-align: left; vertical-align: top; }
+  .tartalom th { background: var(--panel-2); }
+  .tartalom > p.bevezeto, .tartalom > blockquote.bevezeto { margin-bottom: 14px; }
+  .hozzaszolok { margin-top: 10px; }
+
+  .modal-hatter { position: fixed; inset: 0; background: rgba(0,0,0,.5); display: flex; align-items: center; justify-content: center; padding: 16px; z-index: 20; }
+  .modal-hatter[hidden] { display: none; }
+  .modal { background: var(--panel); border-radius: 14px; padding: 20px; width: 100%; max-width: 420px; border: 1px solid var(--border); }
+  .modal h2 { margin-top: 0; }
+  .ures { text-align: center; color: var(--muted); padding: 24px 8px; }
+  .betolt { text-align: center; color: var(--muted); padding: 40px 0; }
+  footer { color: var(--muted); font-size: .8rem; text-align: center; padding: 0 0 30px; }
+</style>
+</head>
+<body>
+<header class="fej">
+  <div class="wrap fej-sor">
+    <h1>🧟 Túlélőjáték <small>közös tervezőoldal</small></h1>
+    <div class="chipek">
+      <span class="chip" id="szinkron-chip" title="Mentés állapota"><span class="pont" id="szinkron-pont"></span><span id="szinkron-szoveg">betöltés…</span></span>
+      <span class="chip">👤 <span id="nev-kiir">–</span> <button type="button" id="nev-csere" title="Név módosítása">✎</button></span>
+      <button type="button" class="chip" id="frissit" title="Újratöltés a szerverről">⟳ Frissítés</button>
+      <button type="button" class="chip" id="tema" title="Világos / sötét">◐</button>
+    </div>
+  </div>
+</header>
+
+<nav class="fulek" aria-label="Fülek">
+  <div class="wrap" role="tablist">
+    <button type="button" role="tab" data-ful="attekintes" aria-selected="true">Áttekintés</button>
+    <button type="button" role="tab" data-ful="kerdesek" aria-selected="false">Kérdések<span class="szam" id="kerdes-szam" hidden></span></button>
+    <button type="button" role="tab" data-ful="otletek" aria-selected="false">Ötletek<span class="szam" id="otlet-szam" hidden></span></button>
+    <button type="button" role="tab" data-ful="terv" aria-selected="false">Játékterv</button>
+    <button type="button" role="tab" data-ful="naplo" aria-selected="false">Napló</button>
+  </div>
+</nav>
+
+<main class="wrap">
+  <div id="globalis-uzenet"></div>
+  <section id="ful-attekintes"><div class="betolt">Betöltés…</div></section>
+  <section id="ful-kerdesek" hidden></section>
+  <section id="ful-otletek" hidden></section>
+  <section id="ful-terv" hidden><div class="tartalom" id="terv-tartalom"></div></section>
+  <section id="ful-naplo" hidden><div class="tartalom" id="naplo-tartalom"></div></section>
+</main>
+
+<footer>Minden, amit itt írsz, automatikusan mentődik, és a többiek is látják. Claude a következő tervezéskor beolvassa.</footer>
+
+<div class="modal-hatter" id="nev-modal" hidden>
+  <form class="modal" id="nev-urlap">
+    <h2>Szia! Ki vagy?</h2>
+    <p class="halvany">A neved mellé kerülnek a válaszaid és az ötleteid. Ezen a gépen megjegyezzük.</p>
+    <input type="text" id="nev-mezo" maxlength="30" placeholder="pl. Lackó" autocomplete="nickname" required>
+    <div class="gombsor"><button class="gomb" type="submit">Mehet</button></div>
+  </form>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js" integrity="sha384-/TQbtLCAerC3jgaim+N78RZSDYV7ryeoBCVqTuzRrFec2akfBkHS7ACQ3PQhvMVi" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.min.js" integrity="sha384-+VfUPEb0PdtChMwmBcBmykRMDd+v6D/oFmB3rZM/puCMDYcIvF968OimRh4KQY9a" crossorigin="anonymous"></script>
+<script type="module" src="app.js"></script>
+</body>
+</html>

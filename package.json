@@ -1,0 +1,8 @@
+{
+  "name": "tulelojatek-kozos",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test teszt/*.test.mjs"
+  }
+}
