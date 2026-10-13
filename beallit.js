@@ -3,5 +3,5 @@
 // csak a PRIVÁT adatrepó (Endy07/tulelojatek-adat) Contents jogát kapja, ezt az oldalt nem tudja átírni.
 export const BEALLIT = {
   repo: "Endy07/tulelojatek-adat",
-  darabok: [],
+  darabok: ["github_pat_11AJLO4TQ0ZZd", "3nEuBhGMp_sJpInEb0DBZhhE", "8LPFLJywzmb4PffaXBckfWMy", "7lsFtN5MPG4DW6s4lzJEr"],
 };
